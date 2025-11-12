@@ -1,153 +1,153 @@
 # Kama-HTTPServer
-【代码随想录知识星球】项目分享：Kama-HTTPServer
 
->⭐️ 本项目为[【代码随想录知识星球】](https://programmercarl.com/other/kstar.html) 教学项目  
->⭐️ 在 [HTTP服务框架文档](https://www.programmercarl.com/other/project_http.html) 里详细讲解：项目前置知识 + 项目细节 + 代码解读 + 项目难点 + 面试题与回答 + 简历写法 + 项目拓展。 全面帮助你用这个项目求职面试！
-## 项目介绍
-本项目是基于C++实现自定义的 HttpServer 框架，该项目包括 HTTP/HTTPS 支持、动态路由处理、会话管理等功能。并基于该框架开发了一个简易的五子棋在线对战游戏，包含登录注册、菜单选择、人机对战等功能。
-### HTTP框架目录结构
-```
-HttpServer/
-├── include/
-│   ├── http/
-│   │   ├── HttpContext.h
-│   │   ├── HttpRequest.h
-│   │   ├── HttpResponse.h
-│   │   └── HttpServer.h
-│   ├── router/
-│   │   ├── Router.h
-│   │   └── RouterHandler.h
-│   ├── middleware/
-|   |   ├── MiddlewareChain.h
-|   |   ├── Middleware.h
-|   |   └── cors/
-|   |       ├── CorsConfig.h
-|   |       └── CorsMiddleware.h
-│   ├── session/                
-│   │   ├── Session.h
-│   │   ├── SessionManager.h
-│   │   └── SessionStorage.h
-│   ├── ssl/
-│   │   ├── SslContext.h
-│   │   ├── SslConfig.h
-│   │   ├── SslConnection.h
-│   │   └── SslTypes.h
-│   └── utils/
-│       ├── FileUtil.h
-│       ├── JsonUtil.h
-│       ├── MysqlUtil.h
-│       └── db/
-│           ├── DbConnection.h
-│           ├── DbConnectionPool.h
-│           └── DbException.h
-├── src/
-│   ├── http/
-│   │   ├── HttpContext.cpp
-│   │   ├── HttpRequest.cpp
-│   │   ├── HttpResponse.cpp
-│   │   └── HttpServer.cpp
-│   ├── router/
-│   │   └── Router.cpp
-│   ├── middleware/
-│   │   ├── MiddlewareChain.cpp
-│   │   └── cors/
-│   │       └── CorsMiddleware.cpp
-│   ├── session/                
-│   │   ├── Session.cpp
-│   │   ├── SessionManager.cpp
-│   │   └── SessionStorage.cpp
-│   ├── ssl/
-│   │   ├── SslContext.cpp
-│   │   ├── SslConfig.cpp
-│   │   └── SslConnection.cpp
-│   └── utils/
-│       ├── FileUtil.cpp
-│       └── db/
-│           ├── DbConnection.cpp
-│           └── DbConnectionPool.cpp
-└── tests/
-    └── HttpServerTest.cpp
-```
-### 整体框架模块
-- **网络模块**：基于Muduo网络库实现，Muduo网络库提供了基于Reactor模式的高性能网络编程框架，支持多线程和事件驱动的I/O多路复用，简化了C++网络应用的开发。
-- **HTTP模块**：用于处理HTTP请求和响应，包括请求的解析、响应的生成和发送。
-- **路由模块**：用于管理HTTP请求的路由，根据请求路径和方法将其路由到适当的处理器。支持动态路由和静态路由。
-- **中间件模块**：处理 HTTP 请求和响应的函数或组件，它在客户端请求到达服务器处理逻辑之前、或者服务器响应返回客户端之前执行
-- **会话管理模块**：基于Session实现，Session是一种用于管理用户会话状态的技术，它可以在多个请求之间保持用户状态的一致性。
-- **数据库模块**：数据库连接池通过复用数据库连接来提高应用程序的性能和资源利用效率，减少连接创建和销毁的开销。
-- **SSL模块**：用于处理HTTPS请求和响应，包括请求的解析、响应的生成和发送。
+**本项目目前只在[知识星球](https://programmercarl.com/other/kstar.html)答疑并维护**。
 
-## 项目环境
-### 环境依赖
-- 操作系统(虚拟机或云服务器均可)：Ubuntu 22.04.5
-- 数据库：mysql 5.7.29
-- boost_1_69_0
-- muduo网络库
-- nlohmann/json
-- openssl
-- libmysqlcppconn-dev
+这次带大家用C++开发一个 HTTP服务框架！
 
-### 配置环境
->基础的编译环境配置，可通过linux命令安装，在需要时自行上网搜索相应命令即可。
-#### 编译器相关
-```sh
-sudo apt install g++ cmake make
-```  
-#### boost库和muduo网络库的安装教程链接：  
-boost库：https://blog.csdn.net/QIANGWEIYUAN/article/details/88792874  
-muduo库：https://blog.csdn.net/QIANGWEIYUAN/article/details/89023980  
-#### 其他第三方库依赖
-```
-sudo apt upgrade
-sudo apt install nlohmann-json3-dev
-sudo apt install libmysqlcppconn-dev
-sudo apt install libssl-dev
-```
+大家可以就会问，这和webserver 有啥区别？
 
-## 编译
-第一步：在项目根目录下创建build目录，并进入该目录
-```
-mkdir build
-cd build
-```
-第二步：执行cmake命令
-```
-cmake ..
-```
-第三步：编译生成可执行文件
-```
-make
-```  
-删除编译生成的可执行文件
-```
-make clean
-```  
-## 运行
-> 默认运行在80端口，可以通过追加上 -p 端口号 来指定端口
-```
-sudo ./simple_server
-```  
+为了让大家更清楚的理解，我画一个图：：
 
-## 运行结果
-> 程序运行起来后，到浏览器访问自己对应的 ip:端口号  
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303104806.png' width=500 alt=''></img></div>
 
-登录界面  
-![登录界面](images/image1.jpg)
-菜单界面  
-> 匹配玩家和退出游戏待开发中。。。 </br>
+webserver项目 一般是教你从 socket 开始写最终能够实现一个简单的 HTTP 访问和响应就算是结束了。
 
-![菜单界面](images/image2.jpg)
-对战AI  
-> 人机对战目前只是用于demo测试，AI很弱智，待完善。。。  
+也就是 **WebServer 这个项目的工作重点在于实现一个网络通信框架**。
 
-![菜单界面](images/image3.jpg) 
+HTTP 服务框架项目的**重点在于应用层部分的实现**。
 
-## 总结
-- HttpServer是一个基于C++的高性能HTTP服务器框架，旨在简化Web应用的开发与部署。
-- 通过结合Reactor模型、OpenSSL和多线程技术，HttpServer提供了高效的请求处理、安全通信和并发支持。
-- 该框架支持动态路由、中间件和会话管理，允许开发者专注于业务逻辑的实现。
-- 项目的设计考虑了性能和扩展性，适合在现代Web服务中使用。
-- 未来将继续完善，欢迎更多开发者参与学习与贡献。
+这次我们做的项目 可以作为 webserver 的进阶版，如果做过webserver的话，做本项目会很丝滑，如果没有webserver基础，做本项目会有些难度。
+
+**值得一提的是，该http服务框架项目自带 八股文属性**
+
+这个项目做下来，你会发现 自己背的 网络八股、数据库八股，和C++八股 都用上了，**真正达到活学活用**！
+
+在项目专栏里，本项目涉及到的八股文都给大家列出来了：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110015.png' width=500 alt=''></img></div>
+
+## 什么是 HTTP 框架？
+
+HTTP 框架是一种软件库，旨在简化 Web 应用程序和服务的开发。
+
+它提供了一种结构化的方法来处理 HTTP 请求和响应，管理路由，并通常包括会话管理、安全性和数据处理的工具。
+
+HTTP 框架抽象了网络通信的复杂性，使开发人员能够专注于构建应用程序逻辑。
+
+## 为什么要实现 HTTP 框架？
+
+1. 效率：通过提供可重用的组件和抽象，HTTP 框架减少了开发人员需要编写的样板代码，从而加快了开发过程。
+2. 可扩展性：框架通常内置支持处理多个并发请求，使构建可扩展的应用程序变得更加容易。
+3. 可维护性：结构良好的框架强制执行最佳实践和设计模式，使代码库更易于维护和扩展。
+4. 安全性：框架通常包括安全功能，如输入验证、输出编码以及防止常见漏洞（如 SQL 注入和跨站脚本攻击）。
+5. 社区和支持：流行的框架拥有庞大的社区和丰富的文档，为开发人员提供支持和资源。
+
+## 项目概述
+
+该项目是一个使用 Muduo 库构建的 HTTP 框架，Muduo 是一个用于高性能网络应用的 C++ 网络库。
+
+该框架旨在高效处理 HTTP 请求和响应，为构建 Web 应用程序提供基础。
+
+### 关键组件
+
+1. HttpRequest 和 HttpResponse：这些类封装了 HTTP 请求和响应的细节。HttpRequest 处理 HTTP 方法、头部和主体内容的解析，而 HttpResponse 管理 HTTP 响应的构建，包括状态码、头部和主体内容的设置。
+2. HttpContext：该类管理 HTTP 请求在处理过程中的状态。它跟踪解析状态并存储 HttpRequest 对象，确保请求的完整性和一致性。
+3. HttpServer：作为框架的核心，HttpServer 负责接受连接、读取请求和发送响应。它使用 Muduo 库的高效事件驱动架构来处理网络通信，支持高并发和低延迟。
+4. 路由和处理器：框架支持根据请求路径和方法将请求路由到特定的处理器。处理器负责处理请求并生成适当的响应，支持动态路由和中间件功能。
+5. 日志记录和错误处理：框架包括日志记录功能以跟踪请求处理，并提供错误处理机制以优雅地管理异常和无效请求。通过详细的日志记录和错误报告，开发者可以快速定位和解决问题。
+6. 会话管理：支持用户会话的创建、维护和销毁，确保用户状态的一致性和安全性。
+7. 中间件支持：允许开发者在请求处理的各个阶段插入自定义逻辑，增强系统的灵活性和可扩展性。
+
+### 工作原理
+
+1. 请求解析：传入的 HTTP 请求由 HttpContext 类解析，提取方法、路径、头部和主体。解析后的请求被传递给路由系统。
+2. 路由：根据请求路径和方法，框架将请求路由到适当的处理器。路由系统支持静态和动态路径匹配，确保请求被正确处理。
+3. 响应生成：处理器处理请求并生成 HttpResponse，然后将其发送回客户端。响应生成过程包括设置状态码、头部和主体内容。
+4. 连接管理：框架使用 Muduo 的事件驱动架构管理连接，使其能够高效地处理多个并发连接。通过非阻塞 I/O 和多线程支持，系统能够在高负载下保持稳定。
+5. 安全通信：通过集成 OpenSSL，框架支持 HTTPS，确保数据传输的安全性和完整性。
+
+### 未来增强
+
+* 模板渲染：添加支持渲染 HTML 模板以简化动态网页的创建。通过模板引擎，开发者可以轻松生成动态内容，提高开发效率。
+* WebSocket 支持：扩展框架以支持 WebSocket 连接，实现实时通信。WebSocket 的引入将增强应用的互动性和响应速度，适用于聊天应用、实时更新等场景。
+* 身份验证和授权：集成 OAuth 和 JWT 等认证方式，增强系统的安全性和用户管理能力。
+* 负载均衡和分布式支持：通过引入负载均衡策略和分布式架构，提升系统的可扩展性和可靠性，支持大规模应用的部署。
+
+### 项目难点
+
+* 请求解析的准确性：解析HTTP请求时，需要准确地解析请求行、头部和主体，任何解析错误都可能导致请求处理失败或安全漏洞
+* 继承和多态技术：完成URI到处理器的绑定。
+* 灵活的路由机制：框架需要提供灵活的路由机制，以便根据请求路径和方法将请求路由到正确的处理器。
+* 模块化设计：框架应采用模块化设计，以便于扩展和维护。新功能或组件应能方便地集成到现有框架中。
+* 动态路由：支持基于 URL 模式的动态路由（例如，支持 /users/:id 这样的路径）。
+* 会话支持：实现会话管理，支持用户登录状态的保持。持久化存储：支持将会话数据存储在数据库或内存中。
+* 数据库集成：
+  * 数据库连接池：实现数据库连接池，提高数据库访问效率。
+  * ORM 支持：集成一个轻量级的 ORM，简化数据库操作。
+* 路由中间件：允许在请求到达最终处理器之前进行预处理（例如，身份验证、日志记录）。
+* 常用中间件：提供一些常用的中间件，如 CORS 处理、请求限流、压缩（gzip）等。
+
+**这些重难点反映了在设计和实现 HTTP 框架时需要考虑的关键问题**。
+
+解决这些问题需要深入理解 HTTP 协议、网络编程和系统设计等方面的知识。
+
+通过合理的架构设计和代码实现，可以有效地应对这些挑战。
+
+## 项目精讲
 
 
+该项目的专栏是[知识星球](https://programmercarl.com/other/kstar.html)录友专享的。
+
+项目专栏依然是将 「简历写法」给大家列出来了，大家学完就可以参考这个来写简历：
+
+给出一般写法，适用于 基础不太好的录友写：
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303105614.png' width=500 alt=''></img></div>
+
+给出高阶写法，适用于 想冲刺大厂的录友写：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303105720.png' width=500 alt=''></img></div>
+
+做完该项目，面试中大概率会有哪些面试问题，以及如何回答，也列出好了：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303105751.png' width=500 alt=''></img></div>
+
+专栏中的项目面试题都掌握的话，这个项目在面试中基本没问题。
+
+很多录友在做项目的时候，把项目运行起来 就是第一大难点！
+
+本项目运行起来 需要依赖的环境很多，所以我给大家准备的 自动化环境配置脚本， **项目运行环境，一键配置！ 不需要大家去处理环境问题了**：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110239.png' width=500 alt=''></img></div>
+
+这个脚本运行 都是需要 20 - 30分钟的样子，可以感受一下 如何手动配置环境有多复杂。
+
+本项目分为六大模块， 分别是：报文解析模块、路由模块、会话管理模块、中间件模块、数据连接池模块、HTTPS模块：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110529.png' width=500 alt=''></img></div>
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110606.png' width=500 alt=''></img></div>
+
+当然项目专栏会对本项目代码做详细的讲解：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110703.png' width=500 alt=''></img></div>
+
+本项目作为http服务框架，我们还为大家在本框架下 开发了一个小例子，在线五子棋： （注意五子棋不是本项目重点，仅仅是基于本项目给大家举一个开发例子）
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303110852.png' width=500 alt=''></img></div>
+![](https://file1.kamacoder.com/i/algo/20250303110852.png)
+
+给出框架的优化思路：
+
+<div align="center"><img src='https://file1.kamacoder.com/i/algo/20250303111039.png' width=500 alt=''></img></div>
+
+## 答疑
+
+本项目在[知识星球](https://programmercarl.com/other/kstar.html)里为 文字专栏形式，大家不用担心，看不懂，星球里每个项目有专属答疑群，任何问题都可以在群里问，都会得到解答：
+
+![](https://file1.kamacoder.com/i/web/2025-09-26_11-30-13.jpg)
+
+
+## 获取本项目专栏
+
+**本文档仅为星球内部专享，大家可以加入[知识星球](https://programmercarl.com/other/kstar.html)里获取，在星球置顶一**。
 
